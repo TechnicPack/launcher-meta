@@ -16,7 +16,11 @@ jobs:
       - run: pip install -U requests
       - run: python update_versions.py
         working-directory: ./version
-      - run: |
+      - name: Check for changes
+        run: git diff --quiet || echo 'CHANGED=true' >> "$GITHUB_ENV"
+      - name: Push changes
+        if: ${{ env.CHANGED == 'true' }}
+        run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add ./version/**.json
