@@ -13,6 +13,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11' 
+      - run: pip install -U requests
       - run: python update_versions.py
         working-directory: ./version
       - run: |
@@ -21,4 +22,4 @@ jobs:
           git add ./version/**.json
           git commit -m "Update MC versions ($(date --iso-8601))"
           git push
-          
+
