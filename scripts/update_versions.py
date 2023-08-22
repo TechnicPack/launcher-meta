@@ -104,12 +104,14 @@ for mc in mcs['versions']:
 
     r = requests.get(mc['url'], timeout=5)
 
-    if not os.path.exists(version):
-        print(f'Making dir {version}')
-        os.mkdir(version)
-        new.append(version)
+    target = os.path.join('version', version, version + '.json')
 
-    target = os.path.join(version, version + '.json')
+    target_dir = os.path.dirname(target)
+
+    if not os.path.exists(target_dir):
+        print(f'Making dir {target_dir}')
+        os.mkdir(target_dir)
+        new.append(version)
 
     j = r.json()
     j = process_version(j)
@@ -125,7 +127,7 @@ for mc in mcs['versions']:
             print('Version file is the same we already have, skipping')
             continue
 
-    with open(os.path.join(version, version + '.json'), 'w', encoding='utf-8') as f:
+    with open(target, 'w', encoding='utf-8') as f:
         f.write(new_json)
 
     if version not in new:

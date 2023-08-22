@@ -15,8 +15,7 @@ jobs:
         with:
           python-version: '3.11' 
       - run: pip install -U requests
-      - run: python update_versions.py
-        working-directory: ./version
+      - run: python scripts/update_versions.py
       - name: Check for changes
         run: git diff --quiet || echo 'CHANGED=true' >> "$GITHUB_ENV"
       - name: Push changes
