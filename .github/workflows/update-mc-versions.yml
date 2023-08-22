@@ -1,6 +1,10 @@
 name: Update MC version data
 
 on:
+  push:
+    paths:
+      - '.github/workflows/update-mc-versions.yml'
+      - 'scripts/**'
   schedule:
     - cron: '30 * * * *'
   workflow_dispatch:
