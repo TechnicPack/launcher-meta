@@ -2,6 +2,8 @@ name: Update MC version data
 
 on:
   push:
+    branches:
+      - 'master'
     paths:
       - '.github/workflows/update-mc-versions.yml'
       - 'scripts/**'
