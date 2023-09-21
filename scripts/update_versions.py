@@ -1,9 +1,10 @@
-import requests
-
 import json
 import os
 import os.path
+import re
 import sys
+
+import requests
 
 NATIVE_ARCHS = ('32', '64')
 KNOWN_FEATURES = (
@@ -14,6 +15,38 @@ KNOWN_FEATURES = (
     'is_quick_play_multiplayer',
     'is_quick_play_realms',
 )
+KNOWN_VARIABLES = (
+    'auth_username',
+    'auth_session',
+    'auth_access_token',
+    'auth_player_name',
+    'auth_uuid',
+    'profile_name',
+    'version_name',
+    'version_type',
+    'game_directory',
+    'natives_directory',
+    'classpath',
+    'resolution_width',
+    'resolution_height',
+    'game_assets',
+    'assets_root',
+    'assets_index_name',
+    'user_type',
+    'user_properties',
+    'launcher_name',
+    'launcher_version',
+    # These are ignored because they rely on features that are disabled:
+    'quickPlayPath',
+    'quickPlaySingleplayer',
+    'quickPlayMultiplayer',
+    'quickPlayRealms',
+    # These are not handled yet, but they don't cause issues:
+    'clientid',
+    'auth_xuid',
+)
+
+SUBSTITUTION_REGEX = re.compile(r'\$\{([^}]+)\}')
 
 print('Fetching versions')
 mcs = requests.get('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json', timeout=5).json()
@@ -75,20 +108,39 @@ def process_version(v):
         print('[!!] Warning: No natives detected')
 
     has_feature_errors = False
+    has_variable_errors = False
 
     game_arguments = v.get('arguments', {}).get('game')
     if game_arguments:
         for argument in game_arguments:
-            if 'rules' not in argument:
-                continue
-            for rule in argument['rules']:
-                for feature in rule['features'].keys():
-                    if feature not in KNOWN_FEATURES:
-                        print(f'[!!] ERROR: Unknown feature {feature} in argument {argument}')
-                        has_feature_errors = True
+            # Check substitution variables
+            if isinstance(argument, str):
+                variables_used = SUBSTITUTION_REGEX.findall(argument)
+                for variable_used in variables_used:
+                    if variable_used not in KNOWN_VARIABLES:
+                        print(f'[!!] Error: Unknown variable {variable_used} in argument {argument}')
+                        has_variable_errors = True
+
+            # Check unknown features and variables within rules
+            if isinstance(argument, dict) and 'rules' in argument:
+                for rule in argument['rules']:
+                    for feature in rule['features'].keys():
+                        if feature not in KNOWN_FEATURES:
+                            print(f'[!!] ERROR: Unknown feature {feature} in argument {argument}')
+                            has_feature_errors = True
+                for value in argument.get('value', []):
+                    variables_used = SUBSTITUTION_REGEX.findall(value)
+                    for variable_used in variables_used:
+                        if variable_used not in KNOWN_VARIABLES:
+                            print(f'[!!] Error: Unknown variable {variable_used} in argument {argument!r}')
+                            has_variable_errors = True
 
     if has_feature_errors:
         print('Aborting due to rule feature errors')
+        sys.exit(1)
+
+    if has_variable_errors:
+        print('Aborting due to variable errors')
         sys.exit(1)
 
     return v
