@@ -1,10 +1,11 @@
+import asyncio
 import json
 import os
 import os.path
 import re
 import sys
 
-import requests
+import aiohttp
 
 NATIVE_ARCHS = ('32', '64')
 KNOWN_FEATURES = (
@@ -47,12 +48,6 @@ KNOWN_VARIABLES = (
 )
 
 SUBSTITUTION_REGEX = re.compile(r'\$\{([^}]+)\}')
-
-print('Fetching versions')
-mcs = requests.get('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json', timeout=5).json()
-
-changed = []
-new = []
 
 def process_version(v):
     assert v.get('minimumLauncherVersion', 0) <= 21
@@ -145,52 +140,65 @@ def process_version(v):
 
     return v
 
-for mc in mcs['versions']:
-    if mc['type'] != 'release' and mc['id'] != '1.5':  # For some reason we have 1.5 at Technic, even tho it's a snapshot
-        # print(f'Skipping {mc["id"]}, type {mc["type"]}')
-        continue
+async def main():
+    timeout = aiohttp.ClientTimeout(total=10)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        print('Fetching versions')
 
-    version = mc['id']
+        async with session.get('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json') as resp:
+            mcs = await resp.json()
 
-    print(f'Processing {version}')
+        changed = []
+        new = []
 
-    r = requests.get(mc['url'], timeout=5)
+        for mc in mcs['versions']:
+            if mc['type'] != 'release' and mc['id'] != '1.5':  # For some reason we have 1.5 at Technic, even tho it's a snapshot
+                # print(f'Skipping {mc["id"]}, type {mc["type"]}')
+                continue
 
-    target = os.path.join('version', version, version + '.json')
+            version = mc['id']
 
-    target_dir = os.path.dirname(target)
+            print(f'Processing {version}')
 
-    if not os.path.exists(target_dir):
-        print(f'Making dir {target_dir}')
-        os.mkdir(target_dir)
-        new.append(version)
+            async with session.get(mc['url']) as resp:
+                j = await resp.json()
 
-    j = r.json()
-    j = process_version(j)
-    new_json = json.dumps(j, separators=(', ', ': '))
+            target = os.path.join('version', version, version + '.json')
 
-    # This is to minimize writes, so it doesn't waste writes on my SSD when
-    # no changes actually happen
-    if os.path.exists(target):
-        with open(target, 'r', encoding='utf-8') as f:
-            old_json = f.read()
+            target_dir = os.path.dirname(target)
 
-        if old_json == new_json:  # if old == new
-            print('Version file is the same we already have, skipping')
-            continue
+            if not os.path.exists(target_dir):
+                print(f'Making dir {target_dir}')
+                os.mkdir(target_dir)
+                new.append(version)
 
-    with open(target, 'w', encoding='utf-8') as f:
-        f.write(new_json)
+            j = process_version(j)
+            new_json = json.dumps(j, separators=(', ', ': '))
 
-    if version not in new:
-        changed.append(version)
+            # This is to minimize writes, so it doesn't waste writes on my SSD when
+            # no changes actually happen
+            if os.path.exists(target):
+                with open(target, 'r', encoding='utf-8') as f:
+                    old_json = f.read()
 
-if changed:
-    print('Updated versions: ' + ', '.join(changed))
-else:
-    print('No updated versions')
+                if old_json == new_json:  # if old == new
+                    print('Version file is the same we already have, skipping')
+                    continue
 
-if new:
-    print('New versions: ' + ', '.join(new))
-else:
-    print('No new versions')
+            with open(target, 'w', encoding='utf-8') as f:
+                f.write(new_json)
+
+            if version not in new:
+                changed.append(version)
+
+    if changed:
+        print('Updated versions: ' + ', '.join(changed))
+    else:
+        print('No updated versions')
+
+    if new:
+        print('New versions: ' + ', '.join(new))
+    else:
+        print('No new versions')
+
+asyncio.run(main())

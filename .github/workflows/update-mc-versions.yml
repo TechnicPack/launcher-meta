@@ -6,7 +6,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/update-mc-versions.yml'
-      - 'scripts/**'
+      - 'update_versions.py'
   schedule:
     - cron: '30 * * * *'
   workflow_dispatch:
@@ -17,13 +17,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12' 
-      - run: pip install -U requests
-      - run: python scripts/update_versions.py
+          python-version-file: '.python-version' # Read python version from .python-version
+          cache: 'poetry'
+      - run: poetry install
+      - run: poetry run python update_versions.py
       - name: Check for changes
-        run: git diff --quiet || echo 'CHANGED=true' >> "$GITHUB_ENV"
+        run: git diff version/ --quiet || echo 'CHANGED=true' >> "$GITHUB_ENV"
       - name: Push changes
         if: ${{ env.CHANGED == 'true' }}
         run: |
