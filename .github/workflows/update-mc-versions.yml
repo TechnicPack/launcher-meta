@@ -26,7 +26,7 @@ jobs:
       - run: poetry install
       - run: poetry run python update_versions.py
       - name: Check for changes
-        run: git diff version/ --quiet || echo 'CHANGED=true' >> "$GITHUB_ENV"
+        run: git diff --quiet version/ || echo 'CHANGED=true' >> "$GITHUB_ENV"
       - name: Push changes
         if: ${{ env.CHANGED == 'true' }}
         run: |
