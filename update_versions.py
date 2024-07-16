@@ -7,6 +7,8 @@ import sys
 
 import aiohttp
 
+from packaging.version import Version
+
 NATIVE_ARCHS = ('32', '64')
 KNOWN_FEATURES = (
     'is_demo_user',
@@ -99,7 +101,8 @@ def process_version(v):
     if 'javaVersion' not in v:
         v['javaVersion'] = {'component': 'jre-legacy', 'majorVersion': 8}
 
-    if not natives_detected:
+    # Warn if natives are missing, for MC versions older than 1.19
+    if not natives_detected and Version(v['id']) < Version('1.19'):
         print('[!!] Warning: No natives detected')
 
     has_feature_errors = False
