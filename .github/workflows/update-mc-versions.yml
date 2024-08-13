@@ -15,6 +15,9 @@ concurrency:
   group: deploy
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   update_mc_versions:
     name: "Update MC versions"
@@ -30,7 +33,7 @@ jobs:
       - run: poetry install
       - run: poetry run python update_versions.py
       - name: Check for changes
-        run: git diff --quiet version/ || echo 'CHANGED=true' >> "$GITHUB_ENV"
+        run: git diff --quiet --exit-code -- version/ || echo 'CHANGED=true' >> "$GITHUB_ENV"
       - name: Push changes
         if: ${{ env.CHANGED == 'true' }}
         run: |
