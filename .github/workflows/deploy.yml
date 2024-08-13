@@ -5,6 +5,7 @@ on:
     branches:
       - 'master'
     paths:
+      - '.github/workflows/deploy.yml'
       - 'version/**'
   workflow_dispatch:
 
