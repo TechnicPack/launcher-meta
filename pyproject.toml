@@ -8,7 +8,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-aiohttp = {extras = ["speedups"], version = "^3.10.1"}
+aiohttp = {extras = ["speedups"], version = "^3.10.3"}
 packaging = "^24.1"
 
 
