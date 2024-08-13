@@ -14,8 +14,9 @@ concurrency:
 
 jobs:
   deploy:
-    name: "Deploy to mirror"
+    name: Deploy to mirror
     runs-on: self-hosted
+    environment: technic-mirror
     steps:
       - name: Pull changes
         run: cd $MIRROR_BASEPATH && sudo -u $MIRROR_USER2 -H git pull
