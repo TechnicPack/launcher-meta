@@ -9,6 +9,9 @@ on:
       - 'version/**'
   workflow_dispatch:
 
+# we don't need GITHUB_TOKEN in this workflow
+permissions: {}
+
 jobs:
   deploy:
     name: Deploy to mirror
