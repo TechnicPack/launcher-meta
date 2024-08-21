@@ -11,8 +11,11 @@ on:
     - cron: '30 * * * *'
   workflow_dispatch:
 
-permissions:
-  contents: write
+# GITHUB_TOKEN doesn't need permissions, since we're using a custom SSH key to work around GitHub Actions
+# not running other workflows on push when changes are pushed with a GITHUB_TOKEN:
+# https://github.com/orgs/community/discussions/25702
+# https://stackoverflow.com/a/74563109
+permissions: {}
 
 jobs:
   update_mc_versions:
@@ -20,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          ssh-key: ${{ secrets.COMMIT_KEY }}
       - name: Install poetry
         run: pipx install poetry
       - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5
