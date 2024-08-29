@@ -27,7 +27,7 @@ jobs:
           ssh-key: ${{ secrets.COMMIT_KEY }}
       - name: Install poetry
         run: pipx install poetry
-      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5
+      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5
         with:
           python-version-file: '.python-version' # Read python version from .python-version
           cache: 'poetry'
