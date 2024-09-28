@@ -5,6 +5,12 @@
     ":automergeDisabled",
     ":separateMajorReleases"
   ],
+  "assignees": [
+    "Pyker"
+  ],
+  "reviewers": [
+    "Pyker"
+  ],
   "rangeStrategy": "bump",
   "packageRules": [
     {
