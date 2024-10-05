@@ -8,14 +8,15 @@
   "assignees": [
     "Pyker"
   ],
-  "reviewers": [
-    "Pyker"
-  ],
   "rangeStrategy": "bump",
   "packageRules": [
     {
       "matchDepNames": ["python"],
       "rangeStrategy": "auto"
+    },
+    {
+      "matchPackageNames": ["aiohttp"],
+      "changelogUrl": "https://docs.aiohttp.org/en/stable/changes.html"
     }
   ]
 }
