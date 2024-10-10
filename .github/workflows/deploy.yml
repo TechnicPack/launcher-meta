@@ -37,8 +37,6 @@ jobs:
               "${DISCORD_WEBHOOK_URL}?wait=true" \
               -H 'Content-Type: application/json' \
               -d "$payload"
-          else
-            exit 0
           fi
         env:
           MIRROR_BASEPATH: ${{ secrets.MIRROR_BASEPATH }}
