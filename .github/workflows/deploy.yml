@@ -23,3 +23,24 @@ jobs:
         env:
           MIRROR_BASEPATH: ${{ secrets.MIRROR_BASEPATH }}
           MIRROR_USER2: ${{ secrets.MIRROR_USER2 }}
+      - name: Detect new MC versions
+        run: |
+          # abort on errors
+          set -euo pipefail
+          cd $MIRROR_BASEPATH
+          NEW_VERSION_PATHS="$(sudo -u $MIRROR_USER2 -H git diff --name-only --diff-filter=A "$GITHUB_REF_NAME@{1}".."$GITHUB_REF_NAME" -- version/)"
+          if [ -n "$NEW_VERSION_PATHS" ]; then
+            payload=$(printf '%s' "$NEW_VERSION_PATHS" | cut -d'/' -f2 | sort -V | \
+              jq --raw-input --slurp 'split("\n") | map(select(. != "")) | unique | join(", ") | "New MC versions: " + . | {content: .}')
+            printf 'Payload:\n%s\n' "$payload"
+            curl -X POST --fail-with-body --silent --show-error \
+              "${DISCORD_WEBHOOK_URL}?wait=true" \
+              -H 'Content-Type: application/json' \
+              -d "$payload"
+          else
+            exit 0
+          fi
+        env:
+          MIRROR_BASEPATH: ${{ secrets.MIRROR_BASEPATH }}
+          MIRROR_USER2: ${{ secrets.MIRROR_USER2 }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
