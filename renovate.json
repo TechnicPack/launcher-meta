@@ -18,5 +18,10 @@
       "matchPackageNames": ["aiohttp"],
       "changelogUrl": "https://docs.aiohttp.org/en/stable/changes.html"
     }
+  ],
+  "hostRules": [
+    {
+      "abortOnError": true
+    }
   ]
 }
