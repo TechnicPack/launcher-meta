@@ -1,13 +1,16 @@
 name: Run tests
 
 on:
-  push: &filters
+  push:
     branches:
       - 'master'
     paths-ignore:
       - 'renovate.json'
   pull_request:
-    <<: *filters
+    branches:
+      - 'master'
+    paths-ignore:
+      - 'renovate.json'
 
 # read-only token
 permissions: {}
