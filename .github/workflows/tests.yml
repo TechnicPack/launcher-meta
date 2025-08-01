@@ -1,0 +1,28 @@
+name: Run tests
+
+on:
+  push: &filters
+    branches:
+      - 'master'
+    paths-ignore:
+      - 'renovate.json'
+  pull_request:
+    <<: *filters
+
+# read-only token
+permissions: {}
+
+jobs:
+  update_mc_versions:
+    name: "Update MC versions"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
+        with:
+          python-version-file: '.python-version' # Read python version from .python-version
+          cache: 'poetry'
+      - run: poetry install
+      - run: poetry run python update_versions.py
