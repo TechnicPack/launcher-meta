@@ -2,9 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
-    ":automergeDisabled",
     ":separateMajorReleases"
   ],
+  "automerge": true,
   "assignees": [
     "Pyker"
   ],
