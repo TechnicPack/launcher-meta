@@ -31,8 +31,14 @@ jobs:
         with:
           python-version-file: '.python-version' # Read python version from .python-version
           cache: 'poetry'
-      - run: poetry install
-      - run: poetry run python update_versions.py
+      - name: Install dependencies
+        run: poetry install
+      - name: Check for updates to Minecraft versions
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: poetry run python update_versions.py
       - name: Check for changes
         run: git diff --quiet --exit-code -- version/ || echo 'CHANGED=true' >> "$GITHUB_ENV"
       - name: Push changes
