@@ -8,7 +8,7 @@ readme = "README.md"
 dependencies = ["aiohttp[speedups]>=3.13.1,<4", "packaging~=24.1"]
 
 [dependency-groups]
-dev = ["pre-commit>=4.3.0,<5", "ruff>=0.14.1"]
+dev = ["pre-commit>=4.3.0,<5", "ruff>=0.14.2"]
 
 [tool.uv]
 package = false
