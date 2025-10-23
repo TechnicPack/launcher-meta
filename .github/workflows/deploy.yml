@@ -3,10 +3,10 @@ name: Deploy to production
 on:
   push:
     branches:
-      - 'master'
+      - "master"
     paths:
-      - '.github/workflows/deploy.yml'
-      - 'version/**'
+      - ".github/workflows/deploy.yml"
+      - "version/**"
   workflow_dispatch:
 
 # we don't need GITHUB_TOKEN in this workflow

@@ -3,12 +3,12 @@ name: Update MC version data
 on:
   push:
     branches:
-      - 'master'
+      - "master"
     paths:
-      - '.github/workflows/update-mc-versions.yml'
-      - 'update_versions.py'
+      - ".github/workflows/update-mc-versions.yml"
+      - "update_versions.py"
   schedule:
-    - cron: '30 * * * *'
+    - cron: "30 * * * *"
   workflow_dispatch:
 
 # GITHUB_TOKEN doesn't need permissions, since we're using a custom SSH key to work around GitHub Actions
@@ -25,28 +25,30 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           ssh-key: ${{ secrets.COMMIT_KEY }}
-      - name: Install poetry
-        run: pipx install poetry
-      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version-file: '.python-version' # Read python version from .python-version
-          cache: 'poetry'
-      - name: Install dependencies
-        run: poetry install
+          python-version-file: ".python-version"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.5"
+          enable-cache: true
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
       - name: Check for updates to Minecraft versions
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
         with:
           timeout_minutes: 5
           max_attempts: 3
-          command: poetry run python update_versions.py
+          command: uv run update_versions.py
       - name: Check for changes
         run: git diff --quiet --exit-code -- version/ || echo 'CHANGED=true' >> "$GITHUB_ENV"
       - name: Push changes
-        if: ${{ env.CHANGED == 'true' }}
+        if: env.CHANGED == 'true'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add ./version/**.json
           git commit -m "Update MC versions ($(date --iso-8601))"
           git push
-

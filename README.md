@@ -31,33 +31,30 @@ launcher-meta/
 │   ├── 1.20.6/
 │   └── ...                    # All supported MC versions
 ├── update_versions.py         # Main processing script
-├── pyproject.toml            # Poetry dependencies
+├── pyproject.toml            # Python dependencies
 ├── renovate.json             # Dependency update configuration
 └── README.md                 # This file
 ```
 
 ## Requirements
 
-- Python 3.12+
+- Python 3.14+
 - aiohttp (with speedups)
 - packaging
 
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd launcher-meta
 ```
 
-2. Install dependencies using Poetry:
-```bash
-poetry install
-```
+2. Run the script with uv:
 
-Or with pip:
 ```bash
-pip install aiohttp[speedups] packaging
+uv run update_versions.py
 ```
 
 ## Usage
@@ -67,10 +64,11 @@ pip install aiohttp[speedups] packaging
 Run the main script to fetch and process the latest Minecraft versions:
 
 ```bash
-python update_versions.py
+uv run update_versions.py
 ```
 
 The script will:
+
 1. Fetch the version manifest from Mojang's API
 2. Process each release version (skipping snapshots)
 3. Generate optimized manifests in the `version/` directory
@@ -119,6 +117,7 @@ This repository uses Renovate Bot for automated dependency updates. Configuratio
 ### Architecture Support
 
 The tool supports the following native architectures:
+
 - 32-bit (`32`)
 - 64-bit (`64`)
 
@@ -134,6 +133,7 @@ The tool supports the following native architectures:
 ### Error Handling
 
 The script includes comprehensive validation:
+
 - Unknown features trigger immediate termination
 - Unknown variables are flagged as errors
 - Missing native libraries generate warnings for older versions
@@ -157,4 +157,4 @@ This project is maintained by the Technic team (@Pyker). Please refer to the pro
 
 ---
 
-*This tool is designed specifically for the Technic Launcher and may not be suitable for other Minecraft launchers without modification.*
+_This tool is designed specifically for the Technic Launcher and may not be suitable for other Minecraft launchers without modification._

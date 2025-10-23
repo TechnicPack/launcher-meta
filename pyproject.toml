@@ -1,17 +1,49 @@
-[tool.poetry]
+[project]
 name = "launcher-meta"
 version = "0.1.0"
-description = ""
-authors = ["Pyker <pyker@technicpack.net>"]
+description = "Technic Launcher metadata"
+authors = [{ name = "Pyker", email = "pyker@technicpack.net" }]
+requires-python = ">= 3.14"
 readme = "README.md"
-package-mode = false
+dependencies = ["aiohttp[speedups]>=3.13.1,<4", "packaging~=24.1"]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-aiohttp = {extras = ["speedups"], version = "^3.13.1"}
-packaging = "^24.1"
+[dependency-groups]
+dev = ["pre-commit>=4.3.0,<5", "ruff>=0.14.1"]
 
+[tool.uv]
+package = false
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+# Set the maximum line length to 120.
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+ignore = [
+    # line-too-long
+    "E501",
+    # recommended from https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    # indentation-with-invalid-multiple
+    "E111",
+    # indentation-with-invalid-multiple-comment
+    "E114",
+    # over-indented
+    "E117",
+]
