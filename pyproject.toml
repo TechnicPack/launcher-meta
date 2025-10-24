@@ -5,7 +5,7 @@ description = "Technic Launcher metadata"
 authors = [{ name = "Pyker", email = "pyker@technicpack.net" }]
 requires-python = ">= 3.14"
 readme = "README.md"
-dependencies = ["aiohttp[speedups]>=3.13.1,<4", "packaging~=24.1"]
+dependencies = ["aiohttp[speedups]>=3.13.1,<4", "packaging~=24.2"]
 
 [dependency-groups]
 dev = ["pre-commit>=4.3.0,<5", "ruff>=0.14.2"]
