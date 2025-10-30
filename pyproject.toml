@@ -14,7 +14,7 @@ dev = ["pre-commit>=4.3.0,<5", "ruff>=0.14.2"]
 package = false
 
 [build-system]
-requires = ["uv_build>=0.9.5,<0.10.0"]
+requires = ["uv_build>=0.9.6,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.ruff]
