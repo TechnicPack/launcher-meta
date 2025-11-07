@@ -4,12 +4,15 @@
     "config:best-practices",
     ":separateMajorReleases"
   ],
-  "automerge": true,
   "assignees": [
     "Pyker"
   ],
   "rangeStrategy": "bump",
   "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
     {
       "matchDepNames": ["python"],
       "rangeStrategy": "auto"
