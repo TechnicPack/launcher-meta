@@ -6,7 +6,7 @@ authors = [{ name = "Pyker", email = "pyker@technicpack.net" }]
 requires-python = ">= 3.14"
 readme = "README.md"
 dependencies = [
-    "aiohttp[speedups]>=3.13.2,<4",
+    "aiohttp[speedups]>=3.13.3,<4",
     "packaging~=25.0",
 ]
 
